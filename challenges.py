@@ -1,4 +1,6 @@
 from flask import Flask, request
+import requests
+import json
 
 app = Flask(__name__)
 app.debug = True
@@ -13,16 +15,16 @@ def index():
 # Remember to get rid of the pass statement
 @app.route('/course/<course>')
 def course(course):
-   pass
+   return("<h1>Welcome to {}".format(course))
 
 # Task 3.1
 # Edit the HTML form such that form data is sent to localhost:5000/result using POST method
-@app.route('/form')
+@app.route('/form', methods = ["POST", "GET"])
 def enterData():
     s = """<!DOCTYPE html>
 <html>
 <body>
-<form>
+<form method="POST" action="http://localhost:5000/result">
   INGREDIENT:<br>
   <input type="text" name="ingredient" value="eggs">
   <br>
@@ -40,10 +42,16 @@ def enterData():
 @app.route('/result',methods = ['POST', 'GET'])
 def displayData():
     if request.method == 'POST':
-        pass
+        ingredient = request.form['ingredient']
+        baseurl = "http://www.recipepuppy.com/api/"
+        params = {}
+        params["i"] = ingredient
+        api_request = requests.get(baseurl, params = params)
+        json_object = json.loads(api_request.text)
+        return(str(json_object))
 
 ## Task 4
-## Note : Since this is a dyanmic URL, recipes function should recieve a paramter called `ingrdient` 
+## Note : Since this is a dyanmic URL, recipes function should recieve a paramter called `ingrdient`
 @app.route('/recipe/<ingredient>')
 def recipes():
     pass
